@@ -1,16 +1,24 @@
-CFLAGS=I.
+CC = gcc
+CFLAGS = -Wall -Werror
+LIBRARY = libmatrix.a
+SRC_DIR = src
 
-all: make_lib main clean
+all: main
 
-make_lib: ./src/m_nums.c ./src/m_disp.c
-	gcc -fPIC -c ./src/m_nums.c
-	gcc -fPIC -c ./src/m_disp.c
-	# gcc -shared -o ./lib/m_lib.so ./src/m_nums.c ./src/m_disp.c
-	# gcc -shared -o ./lib/m_lib.so ./m_nums.o ./m_disp.o
-	gcc -shared -o m_lib.so ./m_nums.o ./m_disp.o
+main: main.o $(LIBRARY)
+	$(CC) $(CFLAGS) -o main main.o -L. -lmatrix
 
-main: ./src/main.c
-	gcc ./src/main.c -L. -lutil -o launch
+main.o: $(SRC_DIR)/main.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/main.c
+
+$(LIBRARY): m_nums.o m_disp.o
+	ar rcs $(LIBRARY) m_nums.o m_disp.o
+
+m_nums.o: $(SRC_DIR)/m_nums.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/m_nums.c
+
+m_disp.o: $(SRC_DIR)/m_disp.c
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/m_disp.c
 
 clean:
-	rm -rf *.o
+	rm -f main *.o $(LIBRARY)
